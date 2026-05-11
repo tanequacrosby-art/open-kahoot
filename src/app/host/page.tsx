@@ -5,7 +5,7 @@ import PageLayout from "@/components/PageLayout";
 import Hero from "@/components/Hero";
 import { createGameWithQuestions } from "@/lib/gameActions";
 import { loadReadingSOLSet } from "@/lib/loadReadingSOL";
-import type SOLQuestion from "@/types/sol";
+import type { SOLQuestion } from "@/types/sol";
 import type Question from "@/types/game";
 
 function convertSOLToGameQuestions(solQuestions: SOLQuestion[]): Question[] {
