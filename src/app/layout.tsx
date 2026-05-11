@@ -16,7 +16,7 @@ const chango = Coiny({
 });
 
 export const metadata: Metadata = {
-  title: "Open Kahoot!",
+  title: "Elementary SOL Prep!",
   description: "Real-time multiplayer quiz game - Create, Host, Play!",
 };
 
