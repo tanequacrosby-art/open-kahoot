@@ -1,0 +1,41 @@
+[
+  {
+    "id": "r3_1",
+    "sol_standard": "3.5",
+    "ccss_standard": "RI.3.1",
+    "question": "Read the paragraph: \"Mia checked the sky again. Dark clouds gathered quickly, and the wind pushed against her as she walked. She pulled her jacket tighter and hurried toward home.\" What can the reader infer about the weather?",
+    "choices": [
+      "It is becoming stormy.",
+      "It is warm and sunny.",
+      "It is early in the morning.",
+      "It is snowing heavily."
+    ],
+    "answerIndex": 0
+  },
+  {
+    "id": "r3_2",
+    "sol_standard": "3.5",
+    "ccss_standard": "RL.3.2",
+    "question": "Read the passage: \"Carlos practiced every afternoon. At first, he missed many shots, but he kept trying. By the end of the month, he could make almost every basket.\" Which theme is best supported by the passage?",
+    "choices": [
+      "Hard work leads to improvement.",
+      "Winning is more important than learning.",
+      "Sports are easier for some people.",
+      "Practicing is only helpful for athletes."
+    ],
+    "answerIndex": 0
+  },
+  {
+    "id": "r3_3",
+    "sol_standard": "3.5",
+    "ccss_standard": "RI.3.4",
+    "question": "In a science article, the sentence says, \"Scientists observe animal behavior to learn how they survive.\" What does the word *observe* mean in this sentence?",
+    "choices": [
+      "To watch carefully",
+      "To write about",
+      "To imagine",
+      "To compare"
+    ],
+    "answerIndex": 0
+  }
+]
