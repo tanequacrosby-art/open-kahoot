@@ -4,17 +4,30 @@ import base55 from "@/sol-questions/reading_5_5.json";
 
 import { generateVariationsForQuestion } from "@/lib/readingVariationEngine";
 
+type SOLQuestion = {
+  id: string;
+  standard: string;
+  question: string;
+  choices: string[];
+  answerIndex: number;
+};
+
 export function loadReadingSOLSet(standard: "3.5" | "4.4" | "5.5") {
-  let baseQuestions;
+  let baseQuestions: SOLQuestion[] | undefined;
 
-  if (standard === "3.5") baseQuestions = base35;
-  if (standard === "4.4") baseQuestions = base44;
-  if (standard === "5.5") baseQuestions = base55;
+  if (standard === "3.5") baseQuestions = base35 as SOLQuestion[];
+  if (standard === "4.4") baseQuestions = base44 as SOLQuestion[];
+  if (standard === "5.5") baseQuestions = base55 as SOLQuestion[];
 
-  const expanded: any[] = [];
+  // Safety check — prevents undefined errors
+  if (!baseQuestions) {
+    console.warn(`No SOL questions found for standard: ${standard}`);
+    return [];
+  }
+
+  const expanded: SOLQuestion[] = [];
 
   for (const q of baseQuestions) {
-    // Generate 3 variations per question
     const type =
       q.question.includes("mean") ? "vocab" :
       q.question.includes("infer") ? "inference" :
