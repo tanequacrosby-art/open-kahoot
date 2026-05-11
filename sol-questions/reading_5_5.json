@@ -1,0 +1,41 @@
+[
+  {
+    "id": "r5_1",
+    "sol_standard": "5.5",
+    "ccss_standard": "RI.5.4",
+    "question": "Read the sentence: \"Researchers must investigate the cause of the sudden temperature change.\" What does the word *investigate* mean as it is used in the sentence?",
+    "choices": [
+      "To study something carefully to find answers",
+      "To write a summary of events",
+      "To compare two different ideas",
+      "To predict what might happen next"
+    ],
+    "answerIndex": 0
+  },
+  {
+    "id": "r5_2",
+    "sol_standard": "5.5",
+    "ccss_standard": "RL.5.2",
+    "question": "Read the passage: \"When Maya’s first experiment failed, she felt discouraged. Instead of giving up, she reviewed her notes, changed her plan, and tried again. Her second attempt worked perfectly.\" Which theme is best supported by the passage?",
+    "choices": [
+      "Perseverance leads to success.",
+      "Science experiments are always difficult.",
+      "Working alone is better than working in groups.",
+      "Success happens quickly and easily."
+    ],
+    "answerIndex": 0
+  },
+  {
+    "id": "r5_3",
+    "sol_standard": "5.5",
+    "ccss_standard": "RI.5.3",
+    "question": "A passage explains that pollution increased in a river after a factory opened nearby. What relationship is the author describing?",
+    "choices": [
+      "Cause and effect",
+      "Problem and solution",
+      "Compare and contrast",
+      "Sequence of events"
+    ],
+    "answerIndex": 0
+  }
+]
