@@ -1,0 +1,41 @@
+[
+  {
+    "id": "r4_1",
+    "sol_standard": "4.4",
+    "ccss_standard": "RL.4.1",
+    "question": "Read the paragraph: \"Lena stared at the broken model airplane. She sighed, rolled up her sleeves, and gathered the scattered pieces. 'I can fix this,' she whispered, reaching for the glue.\" Which inference is best supported by the paragraph?",
+    "choices": [
+      "Lena is determined to solve the problem.",
+      "Lena plans to throw the airplane away.",
+      "Lena is upset with her friend.",
+      "Lena does not know how to fix the airplane."
+    ],
+    "answerIndex": 0
+  },
+  {
+    "id": "r4_2",
+    "sol_standard": "4.4",
+    "ccss_standard": "RI.4.5",
+    "question": "A nonfiction article includes the headings \"Causes of Erosion,\" \"Types of Erosion,\" and \"Preventing Erosion.\" How do these headings help the reader?",
+    "choices": [
+      "They show how the information is organized by topic.",
+      "They explain the author’s opinion about erosion.",
+      "They list the most important vocabulary words.",
+      "They describe the setting of the article."
+    ],
+    "answerIndex": 0
+  },
+  {
+    "id": "r4_3",
+    "sol_standard": "4.4",
+    "ccss_standard": "RL.4.3",
+    "question": "Read the passage: \"At the beginning of the play, Jordan is nervous about speaking on stage. By the final scene, he stands confidently and delivers his lines with a smile.\" What does this change show about Jordan?",
+    "choices": [
+      "He becomes more confident over time.",
+      "He decides he no longer likes acting.",
+      "He forgets his lines during the play.",
+      "He wants to quit the performance."
+    ],
+    "answerIndex": 0
+  }
+]
