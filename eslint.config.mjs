@@ -9,11 +9,14 @@ const compat = new FlatCompat({
   baseDirectory: __dirname,
 });
 
+// Load Next.js + TypeScript defaults
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
 ];
 
+// Export combined config + your overrides
 export default [
+  ...eslintConfig,
   {
     rules: {
       "@typescript-eslint/no-unused-vars": "off",
@@ -22,4 +25,3 @@ export default [
     },
   },
 ];
-
