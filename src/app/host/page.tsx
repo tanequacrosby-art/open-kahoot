@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { PageLayout } from "@/components/PageLayout";
+import PageLayout from "@/components/PageLayout";
 import { Hero } from "@/components/Hero";
 import { createGameWithQuestions } from "@/lib/gameActions";
 import { loadReadingSOLSet } from "@/lib/loadReadingSOL";
