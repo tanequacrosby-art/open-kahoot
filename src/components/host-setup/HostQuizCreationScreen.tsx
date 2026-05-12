@@ -18,7 +18,11 @@ interface HostQuizCreationScreenProps {
   onAddQuestion: (index?: number) => void;
   onAppendTSV: (index: number, event: React.ChangeEvent<HTMLInputElement>) => void;
   onFileImport: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  onUpdateQuestion: (index: number, field: keyof Question, value: string | number) => void;
+  const onUpdateQuestion = (index: number, updated: Question) => {
+  const newQuestions = [...questions];
+  newQuestions[index] = updated;
+  setQuestions(newQuestions);
+};
   onUpdateOption: (questionIndex: number, optionIndex: number, value: string) => void;
   onRemoveQuestion: (index: number) => void;
   onMoveQuestion: (index: number, direction: 'up' | 'down') => void;
