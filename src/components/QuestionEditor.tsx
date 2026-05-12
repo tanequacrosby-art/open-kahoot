@@ -48,10 +48,22 @@ export default function QuestionEditor({
       onUpdateOption(questionIndex, newIndex, item.option);
     });
     
-    // Find new index of the correct answer
-    const newCorrectAnswerIndex = optionsWithIndices.findIndex(
-      item => item.originalIndex === question.correctAnswer
-    );
+   // Pair each option with its original index
+const optionsWithIndices = question.options.map((opt, index) => ({
+  option: opt,
+  originalIndex: index
+}));
+
+// Find the new index of the correct answer (string match)
+const newCorrectAnswerIndex = optionsWithIndices.findIndex(
+  item => item.option === question.correctAnswer
+);
+
+// Update the correct answer (string)
+const updatedCorrectAnswer =
+  newCorrectAnswerIndex !== -1
+    ? optionsWithIndices[newCorrectAnswerIndex].option
+    : question.correctAnswer;
     
     // Update the correct answer index
     onUpdateQuestion(questionIndex, 'correctAnswer', newCorrectAnswerIndex);
