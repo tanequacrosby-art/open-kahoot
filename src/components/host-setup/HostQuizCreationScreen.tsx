@@ -18,17 +18,16 @@ interface HostQuizCreationScreenProps {
   onAddQuestion: (index?: number) => void;
   onAppendTSV: (index: number, event: React.ChangeEvent<HTMLInputElement>) => void;
   onFileImport: (event: React.ChangeEvent<HTMLInputElement>) => void;
-  const onUpdateQuestion = (index: number, updated: Question) => {
-  const newQuestions = [...questions];
-  newQuestions[index] = updated;
-  setQuestions(newQuestions);
-};
-  onUpdateOption: (questionIndex: number, optionIndex: number, value: string) => void;
+  onUpdateQuestion: (index: number, updated: Question) => void;
   onRemoveQuestion: (index: number) => void;
-  onMoveQuestion: (index: number, direction: 'up' | 'down') => void;
   onDownloadTSV: () => void;
   onCreateGame: () => void;
-  onGenerateAIQuestions: (subject: string, language: 'english' | 'french', accessKey: string, questionCount: number) => Promise<void>;
+  onGenerateAIQuestions: (
+    subject: string,
+    language: 'english' | 'french',
+    accessKey: string,
+    questionCount: number
+  ) => Promise<void>;
 }
 
 export default function HostQuizCreationScreen({
@@ -39,22 +38,20 @@ export default function HostQuizCreationScreen({
   onAppendTSV,
   onFileImport,
   onUpdateQuestion,
-  onUpdateOption,
   onRemoveQuestion,
-  onMoveQuestion,
   onDownloadTSV,
   onCreateGame,
   onGenerateAIQuestions
 }: HostQuizCreationScreenProps) {
   const { t } = useTranslation();
   const [isAIModalOpen, setIsAIModalOpen] = useState(false);
-  const isFormValid = !questions.some(q => !q.question || q.options.some(o => !o));
+
+  // FIXED: use prompt instead of question
+  const isFormValid = !questions.some(q => !q.prompt || q.options.some(o => !o));
 
   return (
     <PageLayout gradient="host" maxWidth="4xl">
       <Card>
-        {/* <h2 className="text-3xl text-black mb-8 text-center font-subtitle">Create Your Quiz</h2> */}
-
         <HostGameSettingsSection 
           gameSettings={gameSettings}
           onUpdateSettings={onUpdateSettings}
@@ -66,9 +63,7 @@ export default function HostQuizCreationScreen({
           onAppendTSV={onAppendTSV}
           onFileImport={onFileImport}
           onUpdateQuestion={onUpdateQuestion}
-          onUpdateOption={onUpdateOption}
           onRemoveQuestion={onRemoveQuestion}
-          onMoveQuestion={onMoveQuestion}
           onOpenAIModal={() => setIsAIModalOpen(true)}
         />
 
@@ -83,6 +78,7 @@ export default function HostQuizCreationScreen({
               >
                 {t('host.quizCreation.downloadTSV')}
               </Button>
+
               <Button
                 onClick={onCreateGame}
                 disabled={!isFormValid}
@@ -104,4 +100,4 @@ export default function HostQuizCreationScreen({
       />
     </PageLayout>
   );
-} 
+}
