@@ -64,7 +64,10 @@ export default function HostResultsScreen({
       <div className="space-y-4">
         {questionStats.answers.map((answer, index) => {
           const baseColor = choiceColorClasses[index];
-          const opacity = index === questionStats.question.correctAnswer ? 'opacity-100' : 'opacity-40';
+          const opacity =
+  questionStats.question.options[index] === questionStats.question.correctAnswer
+    ? "opacity-100"
+    : "opacity-40";
           
           return (
             <div key={index} className="relative rounded-lg border-2 border-gray-300 overflow-hidden">
