@@ -205,11 +205,24 @@ export class GameplayLoop {
   this.playerManager.updateScores(game, currentQuestion.correctAnswer);
     
     // Get and emit stats
-    const stats = this.questionManager.getQuestionStats(game);
-    if (stats) {
-      const correctAnswerCount = stats.answers.find(a => a.optionIndex === currentQuestion.correctAnswer)?.count || 0;
-      console.log(`[PIN ${game.pin}] Results | Correct: ${correctAnswerCount}/${stats.totalPlayers} | Avg score: ${Math.round(game.players.filter(p => !p.isHost).reduce((sum, p) => sum + p.score, 0) / Math.max(1, game.players.filter(p => !p.isHost).length))}`);
-      this.io.to(game.id).emit('questionEnded', stats);
+   const stats = this.questionManager.getQuestionStats(game);
+if (stats) {
+  const correctIndex = currentQuestion.options.indexOf(currentQuestion.correctAnswer);
+  const correctAnswerCount = stats.answers.find(a => a.optionIndex === correctIndex)?.count || 0;
+
+  console.log(
+    `[PIN ${game.pin}] Results | Correct: ${correctAnswerCount}/${stats.totalPlayers} | Avg score: ${
+      Math.round(
+        game.players
+          .filter(p => !p.isHost)
+          .reduce((sum, p) => sum + p.score, 0) /
+        Math.max(1, game.players.filter(p => !p.isHost).length)
+      )
+    }`
+  );
+
+  this.io.to(game.id).emit('questionEnded', stats);
+}
       
       // Send host results
       const host = this.playerManager.getHost(game);
