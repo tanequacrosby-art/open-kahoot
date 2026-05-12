@@ -164,7 +164,7 @@ export class PlayerManager {
     });
   }
 
-  updateScores(game: Game, correctAnswer: number): void {
+  updateScores(game: Game, correctAnswer: string): void {
     const questionStartTime = game.questionStartTime || Date.now();
     const maxPoints = 1000;
     
