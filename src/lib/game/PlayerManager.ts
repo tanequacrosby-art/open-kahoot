@@ -164,31 +164,70 @@ export class PlayerManager {
     });
   }
 
-  updateScores(game: Game, correctAnswer: string): void {
-    const questionStartTime = game.questionStartTime || Date.now();
-    const maxPoints = 1000;
-    
-    game.players.forEach(player => {
-      if (!player.isHost && player.currentAnswer === correctAnswer) {
-        // Calculate time-based score (linear decrease from 1000 to 0)
-        const responseTime = (player.answerTime || Date.now()) - questionStartTime;
-        const answerTimeLimit = game.settings.answerTime * 1000;
-        const timeUsedRatio = responseTime / answerTimeLimit;
-        
-        // Apply dyslexia support: 20% slower score reduction
-        let adjustedTimeUsedRatio = timeUsedRatio;
-        if (player.hasDyslexiaSupport) {
-          adjustedTimeUsedRatio = timeUsedRatio * 0.8; // 20% reduction in time penalty
-        }
-        
-        const pointsEarned = Math.max(0, Math.round(maxPoints * (1 - adjustedTimeUsedRatio)));
-        player.score += pointsEarned;
-        
-        const supportStatus = player.hasDyslexiaSupport ? ' (with dyslexia support)' : '';
-        console.log(`[PIN ${game.pin}] Player ${player.name} earned ${pointsEarned} points${supportStatus} | Total: ${player.score}`);
-      }
-    });
+updateScores(game: Game, correctAnswer: string) {
+  const THINK_TIME = game.settings.thinkTime ?? 5;
+  const ANSWER_TIME = game.settings.answerTime ?? 20;
+
+  for (const player of game.players) {
+    // Skip host
+    if (player.isHost) continue;
+
+    const submission = game.answerHistory.find(
+      (a) => a.playerId === player.id && a.questionIndex === game.currentQuestionIndex
+    );
+
+    if (!submission) {
+      // No answer submitted
+      player.wasCorrect = false;
+      player.pointsEarned = 0;
+      player.streak = 0;
+      continue;
+    }
+
+    const playerAnswer = submission.answer; // STRING
+    const submittedAt = submission.timestamp;
+
+    // -----------------------------
+    // 1. Correctness
+    // -----------------------------
+    const isCorrect = playerAnswer === correctAnswer;
+    player.wasCorrect = isCorrect;
+
+    if (!isCorrect) {
+      player.pointsEarned = 0;
+      player.streak = 0;
+      continue;
+    }
+
+    // -----------------------------
+    // 2. Base Points
+    // -----------------------------
+    let points = 100;
+
+    // -----------------------------
+    // 3. Streak Bonus
+    // -----------------------------
+    player.streak = (player.streak ?? 0) + 1;
+
+    if (player.streak >= 3) points += 50;
+    if (player.streak >= 5) points += 100;
+
+    // -----------------------------
+    // 4. Speed Bonus
+    // -----------------------------
+    const questionStart = game.questionStartTime;
+    const elapsed = (submittedAt - questionStart) / 1000;
+
+    if (elapsed < ANSWER_TIME * 0.25) points += 50; // super fast
+    else if (elapsed < ANSWER_TIME * 0.5) points += 25; // fast
+
+    // -----------------------------
+    // 5. Apply Points
+    // -----------------------------
+    player.pointsEarned = points;
+    player.score += points;
   }
+}
 
   getLeaderboard(game: Game): Player[] {
     return game.players
