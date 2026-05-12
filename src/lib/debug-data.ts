@@ -144,13 +144,8 @@ export const mockPersonalResult: PersonalResult = {
   explanation: mockQuestions[0].explanation
 };
 
-export const mockFinalScores = mockPlayers
+export const mockFinalScores: Player[] = mockPlayers
   .map(p => ({
-    id: p.id,
-    name: p.name,
-    score: p.score,
-    isHost: p.isHost,
-    isConnected: p.isConnected
+    ...p, // includes socketId, name, score, isHost, isConnected, etc.
   }))
   .sort((a, b) => b.score - a.score);
-
