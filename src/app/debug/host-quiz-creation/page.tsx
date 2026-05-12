@@ -1,23 +1,42 @@
 'use client';
 
 import HostQuizCreationScreen from '@/components/host-setup/HostQuizCreationScreen';
-import { mockQuestions, mockGameSettings } from '@/lib/debug-data';
+import type { Question, GameSettings } from '@/types/game';
 
 export default function DebugHostQuizCreationPage() {
+  const questions: Question[] = [
+    {
+      id: 'q1',
+      prompt: 'Sample question prompt',
+      options: ['Option A', 'Option B', 'Option C', 'Option D'],
+      correctAnswer: 'Option A',
+      timeLimit: 30,
+      standard: 'SOL-1.1'
+    }
+  ];
+
+  const gameSettings: GameSettings = {
+    title: 'Debug Quiz',
+    description: 'Testing Host Quiz Creation Screen',
+    language: 'english',
+    timePerQuestion: 30
+  };
 
   return (
-    <HostQuizCreationScreen
-  questions={questions}
-  gameSettings={gameSettings}
-  onUpdateSettings={() => {}}
-  onAddQuestion={() => {}}
-  onAppendTSV={() => {}}
-  onFileImport={() => {}}
-  onUpdateQuestion={() => {}}
-  onRemoveQuestion={() => {}}
-  onDownloadTSV={() => {}}
-  onCreateGame={() => {}}
-  onGenerateAIQuestions={() => {}}
-/>
+    <div className="p-8">
+      <HostQuizCreationScreen
+        questions={questions}
+        gameSettings={gameSettings}
+        onUpdateSettings={() => {}}
+        onAddQuestion={() => {}}
+        onAppendTSV={() => {}}
+        onFileImport={() => {}}
+        onUpdateQuestion={() => {}}
+        onRemoveQuestion={() => {}}
+        onDownloadTSV={() => {}}
+        onCreateGame={() => {}}
+        onGenerateAIQuestions={() => Promise.resolve()}
+      />
+    </div>
   );
-} 
+}
