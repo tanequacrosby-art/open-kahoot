@@ -143,3 +143,14 @@ export const mockPersonalResult: PersonalResult = {
   nextPlayerName: null,
   explanation: mockQuestions[0].explanation
 };
+
+export const mockFinalScores = mockPlayers
+  .map(p => ({
+    id: p.id,
+    name: p.name,
+    score: p.score,
+    isHost: p.isHost,
+    isConnected: p.isConnected
+  }))
+  .sort((a, b) => b.score - a.score);
+
