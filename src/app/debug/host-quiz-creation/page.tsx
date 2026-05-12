@@ -16,10 +16,8 @@ export default function DebugHostQuizCreationPage() {
   ];
 
   const gameSettings: GameSettings = {
-    title: 'Debug Quiz',
-    description: 'Testing Host Quiz Creation Screen',
-    language: 'english',
-    timePerQuestion: 30
+    thinkTime: 5,
+    answerTime: 20
   };
 
   return (
