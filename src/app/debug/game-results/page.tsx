@@ -3,8 +3,7 @@
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import GameResultsPhaseScreen from '@/components/game-screens/GameResultsPhaseScreen';
-import { mockGameStats, mockPersonalResultCorrect, mockPersonalResultIncorrect } from '@/lib/debug-data';
-
+import { mockStats, mockPersonalResult } from '@/lib/debug-data';
 function GameResultsContent() {
   const searchParams = useSearchParams();
   const view = searchParams?.get('view') || 'host';
