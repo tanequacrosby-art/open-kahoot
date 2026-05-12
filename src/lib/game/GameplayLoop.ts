@@ -147,7 +147,11 @@ export class GameplayLoop {
       return;
     }
 
-    console.log(`[PIN ${game.pin}] Thinking phase | Question: "${question.question.substring(0, 30)}${question.question.length > 30 ? '...' : ''}" | Duration: ${game.settings.thinkTime}s`);
+    console.log(
+  `[PIN ${game.pin}] Thinking phase | Question: "${question.prompt.substring(0, 30)}${
+    question.prompt.length > 30 ? '...' : ''
+  }" | Duration: ${game.settings.thinkTime}s`
+);
     
     // Emit thinking phase to all clients
     this.io.to(game.id).emit('thinkingPhase', question, game.settings.thinkTime);
