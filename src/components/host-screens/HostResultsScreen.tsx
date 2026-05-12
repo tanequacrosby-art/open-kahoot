@@ -36,7 +36,7 @@ export default function HostResultsScreen({
     <div className="bg-white rounded-lg p-8 border border-gray-300">
       <div className="text-center mb-8">
         <h1 className="text-4xl text-black mb-6 font-subtitle">
-          {questionStats.question.question}
+          {questionStats.question.prompt}
         </h1>
         {questionStats.question.explanation && (
           <p className="text-gray-600 text-xl mb-6 bg-gray-50 p-4 rounded-lg border border-gray-200">
