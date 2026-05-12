@@ -149,3 +149,9 @@ export const mockFinalScores: Player[] = mockPlayers
     ...p, // includes socketId, name, score, isHost, isConnected, etc.
   }))
   .sort((a, b) => b.score - a.score);
+
+export const mockLeaderboard: Player[] = mockPlayers
+  .map(p => ({
+    ...p, // keep socketId, name, score, isHost, isConnected
+  }))
+  .sort((a, b) => b.score - a.score);
