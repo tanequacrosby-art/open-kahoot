@@ -155,3 +155,15 @@ export const mockLeaderboard: Player[] = mockPlayers
     ...p, // keep socketId, name, score, isHost, isConnected
   }))
   .sort((a, b) => b.score - a.score);
+
+export const mockPersonalResultCorrect: PersonalResult = {
+  ...mockPersonalResult,
+  wasCorrect: true,
+  pointsEarned: 200
+};
+
+export const mockPersonalResultIncorrect: PersonalResult = {
+  ...mockPersonalResult,
+  wasCorrect: false,
+  pointsEarned: 0
+};
