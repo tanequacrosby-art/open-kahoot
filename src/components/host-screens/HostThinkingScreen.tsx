@@ -11,7 +11,7 @@ export default function HostThinkingScreen({ currentQuestion }: HostThinkingScre
     <Card className="mb-8">
       {/* Question Text */}
       <h1 className="mb-8 text-5xl text-black text-center leading-tight font-subtitle">
-        {currentQuestion.question}
+        {currentQuestion.prompt}
       </h1>
 
       {/* Question Image */}
