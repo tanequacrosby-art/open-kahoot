@@ -3,7 +3,13 @@
 import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import GameResultsPhaseScreen from '@/components/game-screens/GameResultsPhaseScreen';
-import { mockStats, mockPersonalResult } from '@/lib/debug-data';
+
+import {
+  mockStats,
+  mockPersonalResultCorrect,
+  mockPersonalResultIncorrect
+} from '@/lib/debug-data';
+
 function GameResultsContent() {
   const searchParams = useSearchParams();
   const view = searchParams?.get('view') || 'host';
@@ -12,17 +18,18 @@ function GameResultsContent() {
   const isHost = view === 'host';
   const isPlayer = view === 'player';
 
-  const handleShowLeaderboard = () => {
-    // Removed console.log
-  };
+  const handleShowLeaderboard = () => {};
 
-  const personalResult = result === 'correct' ? mockPersonalResultCorrect : mockPersonalResultIncorrect;
+  const personalResult =
+    result === 'correct'
+      ? mockPersonalResultCorrect
+      : mockPersonalResultIncorrect;
 
   return (
     <GameResultsPhaseScreen
       isHost={isHost}
       isPlayer={isPlayer}
-      questionStats={isHost ? mockGameStats : null}
+      questionStats={isHost ? mockStats : null}
       personalResult={isPlayer ? personalResult : null}
       onShowLeaderboard={handleShowLeaderboard}
     />
@@ -31,8 +38,18 @@ function GameResultsContent() {
 
 export default function DebugGameResultsPage() {
   return (
-    <Suspense fallback={<GameResultsPhaseScreen isHost={true} isPlayer={false} questionStats={null} personalResult={null} onShowLeaderboard={() => {}} />}>
+    <Suspense
+      fallback={
+        <GameResultsPhaseScreen
+          isHost={true}
+          isPlayer={false}
+          questionStats={null}
+          personalResult={null}
+          onShowLeaderboard={() => {}}
+        />
+      }
+    >
       <GameResultsContent />
     </Suspense>
   );
-} 
+}
