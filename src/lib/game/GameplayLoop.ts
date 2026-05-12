@@ -202,7 +202,8 @@ export class GameplayLoop {
     }
 
     // Update scores
-    this.playerManager.updateScores(game, currentQuestion.correctAnswer);
+   const correctIndex = currentQuestion.options.indexOf(currentQuestion.correctAnswer);
+this.playerManager.updateScores(game, correctIndex);
     
     // Get and emit stats
     const stats = this.questionManager.getQuestionStats(game);
