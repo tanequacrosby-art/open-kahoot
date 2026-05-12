@@ -7,22 +7,17 @@ export default function DebugHostQuizCreationPage() {
 
   return (
     <HostQuizCreationScreen
-      questions={mockQuestions}
-      gameSettings={mockGameSettings}
-      onUpdateSettings={() => {}}
-      onAddQuestion={() => {}}
-      onAppendTSV={() => {}}
-      onFileImport={() => {}}
-      onUpdateQuestion={() => {}}
-      onUpdateOption={() => {}}
-      onRemoveQuestion={() => {}}
-      onMoveQuestion={() => {}}
-      onDownloadTSV={() => {}}
-      onCreateGame={() => {}}
-      onGenerateAIQuestions={async (subject: string, language: 'english' | 'french', accessKey: string, questionCount: number) => {
-        console.log('AI generation in debug mode', { subject, language, accessKey, questionCount });
-        return Promise.resolve();
-      }}
-    />
+  questions={questions}
+  gameSettings={gameSettings}
+  onUpdateSettings={() => {}}
+  onAddQuestion={() => {}}
+  onAppendTSV={() => {}}
+  onFileImport={() => {}}
+  onUpdateQuestion={() => {}}
+  onRemoveQuestion={() => {}}
+  onDownloadTSV={() => {}}
+  onCreateGame={() => {}}
+  onGenerateAIQuestions={() => {}}
+/>
   );
 } 
