@@ -42,7 +42,7 @@ export default function HostAnsweringScreen({
 
       {/* Question Text */}
       <h1 className="text-4xl text-black text-center leading-tight mb-8 font-subtitle">
-        {currentQuestion.question}
+        {currentQuestion.prompt}
       </h1>
 
       {/* Question Image */}
