@@ -1,264 +1,143 @@
-'use client';
+"use client";
 
-import { useTranslation } from 'react-i18next';
-import { Trash2, ChevronUp, ChevronDown, Shuffle, Upload } from 'lucide-react';
-import { motion } from 'framer-motion';
-import type { Question } from '@/types/game';
-import Button from '@/components/Button';
-import { useCallback, useState } from 'react';
-import { compressImage } from '@/lib/compressImage';
-import Image from 'next/image';
-import { accent } from '@/lib/palette';
+import React, { useState } from "react";
+import type { Question } from "@/types/game";
 
-interface QuestionEditorProps {
+interface Props {
   question: Question;
-  questionIndex: number;
-  totalQuestions: number;
-  onUpdateQuestion: (index: number, field: keyof Question, value: string | number) => void;
-  onUpdateOption: (questionIndex: number, optionIndex: number, value: string) => void;
-  onRemoveQuestion: (index: number) => void;
-  onMoveQuestion: (index: number, direction: 'up' | 'down') => void;
+  onChange: (updated: Question) => void;
+  onDelete: () => void;
 }
 
-export default function QuestionEditor({
-  question,
-  questionIndex,
-  totalQuestions,
-  onUpdateQuestion,
-  onUpdateOption,
-  onRemoveQuestion,
-  onMoveQuestion
-}: QuestionEditorProps) {
-  const { t } = useTranslation();
-  const handleShuffleOptions = () => {
-    // Create array of options with their indices
-    const optionsWithIndices = question.options.map((option, index) => ({
-      option,
-      originalIndex: index
-    }));
-    
-    // Shuffle the array
-    for (let i = optionsWithIndices.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [optionsWithIndices[i], optionsWithIndices[j]] = [optionsWithIndices[j], optionsWithIndices[i]];
-    }
-    
-    // Update each option in its new position
-    optionsWithIndices.forEach((item, newIndex) => {
-      onUpdateOption(questionIndex, newIndex, item.option);
-    });
-    
-   // Pair each option with its original index
-const optionsWithIndices = question.options.map((opt, index) => ({
-  option: opt,
-  originalIndex: index
-}));
+export default function QuestionEditor({ question, onChange, onDelete }: Props) {
+  const [localQuestion, setLocalQuestion] = useState<Question>(question);
 
-// Find the new index of the correct answer (string match)
-const newCorrectAnswerIndex = optionsWithIndices.findIndex(
-  item => item.option === question.correctAnswer
-);
-
-// Update the correct answer (string)
-const updatedCorrectAnswer =
-  newCorrectAnswerIndex !== -1
-    ? optionsWithIndices[newCorrectAnswerIndex].option
-    : question.correctAnswer;
-    
-    // Update the correct answer index
-    onUpdateQuestion(questionIndex, 'correctAnswer', newCorrectAnswerIndex);
+  // Update wrapper
+  const update = (updated: Partial<Question>) => {
+    const newQ = { ...localQuestion, ...updated };
+    setLocalQuestion(newQ);
+    onChange(newQ);
   };
 
-  const handleImageUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  // Handle option text change
+  const updateOption = (index: number, value: string) => {
+    const newOptions = [...localQuestion.options];
+    newOptions[index] = value;
 
-    try {
-      // Compress / resize the image before storing it
-      const compressed = await compressImage(file, {
-        maxWidth: 1024,
-        maxHeight: 1024,
-        quality: 0.8
-      });
-      onUpdateQuestion(questionIndex, 'image', compressed);
-    } catch (err) {
-      console.error('Image compression failed', err);
-      // Fallback to original image if compression fails
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        onUpdateQuestion(questionIndex, 'image', reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  }, [questionIndex, onUpdateQuestion]);
+    // If the correct answer text changed, update it too
+    const updatedCorrect =
+      localQuestion.correctAnswer === localQuestion.options[index]
+        ? value
+        : localQuestion.correctAnswer;
 
-  // Drag & drop handlers
-  const [isDragOver, setIsDragOver] = useState(false);
+    update({
+      options: newOptions,
+      correctAnswer: updatedCorrect,
+    });
+  };
 
-  const handleDragOver = useCallback((e: React.DragEvent<HTMLLabelElement>) => {
-    e.preventDefault();
-    setIsDragOver(true);
-  }, []);
+  // Handle reordering options
+  const moveOption = (from: number, to: number) => {
+    const newOptions = [...localQuestion.options];
+    const moved = newOptions.splice(from, 1)[0];
+    newOptions.splice(to, 0, moved);
 
-  const handleDragLeave = useCallback(() => {
-    setIsDragOver(false);
-  }, []);
+    // Pair each option with its original index
+    const optionsWithIndices = newOptions.map((opt, index) => ({
+      option: opt,
+      originalIndex: index,
+    }));
 
-  const handleDrop = useCallback(async (e: React.DragEvent<HTMLLabelElement>) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    const file = e.dataTransfer.files?.[0];
-    if (!file || !file.type.startsWith('image/')) return;
+    // Find the new index of the correct answer (string match)
+    const newCorrectAnswerIndex = optionsWithIndices.findIndex(
+      (item) => item.option === localQuestion.correctAnswer
+    );
 
-    try {
-      const compressed = await compressImage(file, {
-        maxWidth: 1024,
-        maxHeight: 1024,
-        quality: 0.8,
-      });
-      onUpdateQuestion(questionIndex, 'image', compressed);
-    } catch (err) {
-      console.error('Image compression failed', err);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        onUpdateQuestion(questionIndex, 'image', reader.result as string);
-      };
-      reader.readAsDataURL(file);
-    }
-  }, [questionIndex, onUpdateQuestion]);
+    // Update the correct answer (string)
+    const updatedCorrectAnswer =
+      newCorrectAnswerIndex !== -1
+        ? optionsWithIndices[newCorrectAnswerIndex].option
+        : localQuestion.correctAnswer;
+
+    update({
+      options: newOptions,
+      correctAnswer: updatedCorrectAnswer,
+    });
+  };
 
   return (
-    <motion.div 
-      layout
-      layoutId={question.id}
-      transition={{ duration: 0.3, ease: "easeInOut" }}
-      className="bg-gray-50 rounded-lg p-6 border border-gray-300"
-    >
-      <div className="flex items-start justify-between mb-4">
-        <h3 className="text-lg font-semibold text-black font-subtitle">{t('host.quizCreation.question')} {questionIndex + 1}</h3>
-        <div className="flex gap-2">
-          <Button
-            onClick={handleShuffleOptions}
-            variant="ghost"
-            size="icon"
-            icon={Shuffle}
-            className="text-black hover:text-gray-700"
-            title={t('host.quizCreation.shuffleOptions')}
-          >
-          </Button>
-          <Button
-            onClick={() => onMoveQuestion(questionIndex, 'up')}
-            disabled={questionIndex === 0}
-            variant="ghost"
-            size="icon"
-            icon={ChevronUp}
-            className="text-black hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-          </Button>
-          <Button
-            onClick={() => onMoveQuestion(questionIndex, 'down')}
-            disabled={questionIndex === totalQuestions - 1}
-            variant="ghost"
-            size="icon"
-            icon={ChevronDown}
-            className="text-black hover:text-gray-700 disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-          </Button>
-          <Button
-            onClick={() => onRemoveQuestion(questionIndex)}
-            variant="ghost"
-            size="icon"
-            icon={Trash2}
-            className="text-black hover:text-gray-700"
-          >
-          </Button>
-        </div>
-      </div>
+    <div className="p-4 border rounded-lg bg-white shadow">
+      {/* Question Prompt */}
+      <label className="block font-semibold mb-1">Question Prompt</label>
+      <textarea
+        className="w-full p-2 border rounded mb-4"
+        value={localQuestion.prompt}
+        onChange={(e) => update({ prompt: e.target.value })}
+      />
 
-      <div className="mb-4">
-        <input
-          type="text"
-          value={question.question}
-          onChange={(e) => onUpdateQuestion(questionIndex, 'question', e.target.value)}
-          className={`w-full px-4 py-3 rounded-lg bg-white border border-gray-300 text-black placeholder-gray-400 focus:outline-none focus:ring-2 ${accent.ringFocus} ${accent.borderFocus}`}
-          placeholder={t('host.quizCreation.questionPlaceholder')}
-        />
-      </div>
-      <div className="flex gap-4 mb-4">
-        <div className="grid flex-1 grid-cols-1 md:grid-cols-2 gap-4">
-          {question.options.map((option, optionIndex) => (
-            <div 
-              key={optionIndex} 
-              className="flex items-center gap-2"
-            >
-              <input
-                type="radio"
-                name={`correct-${questionIndex}`}
-                checked={question.correctAnswer === optionIndex}
-                onChange={() => onUpdateQuestion(questionIndex, 'correctAnswer', optionIndex)}
-                className="text-green-500 focus:ring-green-500"
-              />
-              <input
-                type="text"
-                value={option}
-                onChange={(e) => onUpdateOption(questionIndex, optionIndex, e.target.value)}
-                className={`flex-1 px-3 py-2 rounded-lg border text-black placeholder-gray-400 focus:outline-none focus:ring-2 transition-all ${
-                  question.correctAnswer === optionIndex
-                    ? 'bg-green-50 border-green-400 focus:ring-green-400 focus:border-green-500'
-                    : `bg-white border-gray-300 ${accent.ringFocus} ${accent.borderFocus}`
-                }`}
-                placeholder={t('host.quizCreation.optionPlaceholder', { number: optionIndex + 1 })}
-              />
-            </div>
-          ))}
-        </div>
-        <div className="relative w-28 h-28">
+      {/* SOL Standard */}
+      <label className="block font-semibold mb-1">SOL Standard</label>
+      <input
+        className="w-full p-2 border rounded mb-4"
+        value={localQuestion.standard}
+        onChange={(e) => update({ standard: e.target.value })}
+      />
+
+      {/* Options */}
+      <label className="block font-semibold mb-2">Options</label>
+      {localQuestion.options.map((opt, index) => (
+        <div key={index} className="flex items-center gap-2 mb-2">
           <input
-            type="file"
-            id={`image-upload-${question.id}`}
-            className="hidden"
-            accept="image/*"
-            onChange={handleImageUpload}
+            className="flex-1 p-2 border rounded"
+            value={opt}
+            onChange={(e) => updateOption(index, e.target.value)}
           />
-          <label
-            htmlFor={`image-upload-${question.id}`}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            className={`cursor-pointer flex items-center justify-center w-full h-full rounded-lg border-2 border-dashed transition-colors ${
-              isDragOver ? 'bg-gray-100 border-gray-400' : 'bg-gray-50 border-gray-300 hover:bg-gray-100'
-            }`}
-          >
-            {!question.image && (
-              <div className="text-center">
-                <Upload className="mx-auto h-8 w-8 text-gray-400" />
-                <span className="mt-2 text-sm text-gray-600">{t('host.quizCreation.uploadImage')}</span>
-              </div>
-            )}
-            {question.image && (
-              <Image src={question.image} alt="Question" fill className="object-cover rounded-lg" />
-            )}
-          </label>
-          {question.image && (
-            <Button
-              onClick={() => onUpdateQuestion(questionIndex, 'image', '')}
-              variant="ghost"
-              size="icon"
-              icon={Trash2}
-              className="absolute top-2 right-2 text-white bg-red-500 hover:bg-red-600 rounded-full"
-              title={t('host.quizCreation.removeImage')}
-            />
+
+          {/* Mark correct answer */}
+          <input
+            type="radio"
+            checked={localQuestion.correctAnswer === opt}
+            onChange={() => update({ correctAnswer: opt })}
+          />
+
+          {/* Move up */}
+          {index > 0 && (
+            <button
+              className="px-2 py-1 bg-gray-200 rounded"
+              onClick={() => moveOption(index, index - 1)}
+            >
+              ↑
+            </button>
+          )}
+
+          {/* Move down */}
+          {index < localQuestion.options.length - 1 && (
+            <button
+              className="px-2 py-1 bg-gray-200 rounded"
+              onClick={() => moveOption(index, index + 1)}
+            >
+              ↓
+            </button>
           )}
         </div>
-      </div>
-      <div className="mb-4">
-        <textarea
-          value={question.explanation || ''}
-          onChange={(e) => onUpdateQuestion(questionIndex, 'explanation', e.target.value)}
-          className={`w-full px-4 py-3 rounded-lg bg-white border border-gray-300 text-black placeholder-gray-400 focus:outline-none focus:ring-2 ${accent.ringFocus} ${accent.borderFocus}`}
-          placeholder={t('host.quizCreation.explanationPlaceholder')}
-        />
-      </div>
-    </motion.div>
+      ))}
+
+      {/* Time Limit */}
+      <label className="block font-semibold mt-4 mb-1">Time Limit (seconds)</label>
+      <input
+        type="number"
+        className="w-full p-2 border rounded mb-4"
+        value={localQuestion.timeLimit}
+        onChange={(e) => update({ timeLimit: Number(e.target.value) })}
+      />
+
+      {/* Delete Button */}
+      <button
+        className="mt-4 px-4 py-2 bg-red-500 text-white rounded"
+        onClick={onDelete}
+      >
+        Delete Question
+      </button>
+    </div>
   );
-} 
+}
