@@ -41,14 +41,10 @@ export default function HostQuestionsSection({
           {questions.map((question, questionIndex) => (
             <div key={question.id}>
               <QuestionEditor
-                question={question}
-                questionIndex={questionIndex}
-                totalQuestions={questions.length}
-                onUpdateQuestion={onUpdateQuestion}
-                onUpdateOption={onUpdateOption}
-                onRemoveQuestion={onRemoveQuestion}
-                onMoveQuestion={onMoveQuestion}
-              />
+  question={question}
+  onChange={(updated) => onUpdateQuestion(questionIndex, updated)}
+  onDelete={() => onRemoveQuestion(questionIndex)}
+/>
               <AddQuestionButton onAddQuestion={onAddQuestion} onAppendTSV={onAppendTSV} onOpenAIModal={onOpenAIModal} index={questionIndex + 1} />
             </div>
           ))}
