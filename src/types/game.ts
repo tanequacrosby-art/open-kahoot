@@ -14,9 +14,15 @@ export interface AnswerRecord {
   playerName: string;
   questionIndex: number;
   questionId: string;
-  answerIndex: number | null; // null if no answer was given
+
+  // KEEP index for stats
+  answerIndex: number | null;
+
+  // ADD text for logs + correctness
+  answerText: string | null;
+
   answerTime?: number;
-  responseTime: number;       // milliseconds from question start
+  responseTime: number;
   pointsEarned: number;
   wasCorrect: boolean;
   hasDyslexiaSupport: boolean;
