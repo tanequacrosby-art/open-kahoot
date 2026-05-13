@@ -3,31 +3,44 @@ import base44 from "@/sol-questions/reading_4_4.json";
 import base55 from "@/sol-questions/reading_5_5.json";
 
 import { generateVariationsForQuestion } from "@/lib/readingVariationEngine";
+import type { Question } from "@/types/game";
 
-type SOLQuestion = {
+type RawSOLQuestion = {
   id: string;
   standard: string;
-  question: string;
-  choices: string[];
-  answerIndex: number;
+  question: string;      // old prompt
+  choices: string[];     // old options
+  answerIndex: number;   // old correct answer index
 };
 
-export function loadReadingSOLSet(standard: "3.5" | "4.4" | "5.5") {
-  let baseQuestions: SOLQuestion[] | undefined;
+export function loadReadingSOLSet(standard: "3.5" | "4.4" | "5.5"): Question[] {
+  let baseQuestions: RawSOLQuestion[] | undefined;
 
-  if (standard === "3.5") baseQuestions = base35 as SOLQuestion[];
-  if (standard === "4.4") baseQuestions = base44 as SOLQuestion[];
-  if (standard === "5.5") baseQuestions = base55 as SOLQuestion[];
+  if (standard === "3.5") baseQuestions = base35 as RawSOLQuestion[];
+  if (standard === "4.4") baseQuestions = base44 as RawSOLQuestion[];
+  if (standard === "5.5") baseQuestions = base55 as RawSOLQuestion[];
 
-  // Safety check — prevents undefined errors
   if (!baseQuestions) {
     console.warn(`No SOL questions found for standard: ${standard}`);
     return [];
   }
 
-  const expanded: SOLQuestion[] = [];
+  const expanded: Question[] = [];
 
   for (const q of baseQuestions) {
+    // Convert old JSON → new Question format
+    const baseConverted: Question = {
+      id: q.id,
+      prompt: q.question,
+      options: q.choices,
+      correctAnswer: q.choices[q.answerIndex],
+      timeLimit: 20, // default or override later
+      standard: q.standard,
+      explanation: undefined,
+      image: undefined
+    };
+
+    // Determine variation type
     const type =
       q.question.includes("mean") ? "vocab" :
       q.question.includes("infer") ? "inference" :
@@ -35,14 +48,15 @@ export function loadReadingSOLSet(standard: "3.5" | "4.4" | "5.5") {
 
     const vocabWord = q.question.match(/"(.*?)"/)?.[1];
 
-    const variants = generateVariationsForQuestion(q, {
+    // Generate variations using the converted base question
+    const variants = generateVariationsForQuestion(baseConverted, {
       type,
       vocabWord
     });
 
-    expanded.push(q, ...variants);
+    expanded.push(baseConverted, ...variants);
   }
 
-  // Shuffle so every game is different
+  // Shuffle for randomness
   return expanded.sort(() => Math.random() - 0.5);
 }
