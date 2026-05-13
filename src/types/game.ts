@@ -43,12 +43,12 @@ export interface Player {
   isHost: boolean;
   isConnected: boolean;
 
-  // ADD THESE:
   wasCorrect?: boolean;
   pointsEarned?: number;
   streak?: number;
 
-  // Whatever else you already have:
+  hasDyslexiaSupport?: boolean;   // ← ADD THIS
+
   score: number;
   currentAnswer?: number | string;
   answerTime?: number;
