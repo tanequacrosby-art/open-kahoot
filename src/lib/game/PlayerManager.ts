@@ -1,6 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-import type { Game, Player } from '@/types/game';
-import type { AnswerRecord } from '@/types/game';
+import type { Game, Player, AnswerRecord } from '@/types/game';
 
 export interface JoinGameResult {
   success: boolean;
@@ -10,30 +9,32 @@ export interface JoinGameResult {
 }
 
 export class PlayerManager {
-  joinGame(game: Game, socketId: string, playerName: string, persistentId: string | null = null): JoinGameResult {
-    // Check if this is a reconnection (player with persistent ID already exists)
+  joinGame(
+    game: Game,
+    socketId: string,
+    playerName: string,
+    persistentId: string | null = null
+  ): JoinGameResult {
+    // Reconnection via persistent ID
     if (persistentId) {
-      const existingPlayer = game.players.find(p => p.id === persistentId);
+      const existingPlayer = game.players.find((p) => p.id === persistentId);
       if (existingPlayer) {
-        // Reconnection: update socket ID and connection status
         existingPlayer.socketId = socketId;
         existingPlayer.isConnected = true;
-        // Removed console.log
         return { success: true, game, playerId: persistentId, isReconnection: true };
       }
     }
 
-    // For new joins, only allow during waiting phase
+    // New joins only allowed while waiting
     if (game.status !== 'waiting') {
       return { success: false };
     }
 
-    // Check if player name already exists
-    if (game.players.some(p => p.name === playerName && !p.isHost)) {
+    // Prevent duplicate names (non-host)
+    if (game.players.some((p) => p.name === playerName && !p.isHost)) {
       return { success: false };
     }
 
-    // Create new player
     const playerId = uuidv4();
     const newPlayer: Player = {
       id: playerId,
@@ -49,20 +50,19 @@ export class PlayerManager {
   }
 
   disconnectPlayer(socketId: string, game: Game): Player | undefined {
-    const player = game.players.find(p => p.socketId === socketId);
+    const player = game.players.find((p) => p.socketId === socketId);
     if (player) {
       player.isConnected = false;
-      // Removed console.log
       return player;
     }
     return undefined;
   }
 
   removePlayer(playerId: string, game: Game): boolean {
-    const playerIndex = game.players.findIndex(p => p.id === playerId);
-    if (playerIndex !== -1) {
-      const player = game.players[playerIndex];
-      game.players.splice(playerIndex, 1);
+    const index = game.players.findIndex((p) => p.id === playerId);
+    if (index !== -1) {
+      const player = game.players[index];
+      game.players.splice(index, 1);
       console.log(`[PIN ${game.pin}] Removed player ${player.name} (${player.id})`);
       return true;
     }
@@ -70,19 +70,19 @@ export class PlayerManager {
   }
 
   getPlayerBySocketId(socketId: string, game: Game): Player | undefined {
-    return game.players.find(p => p.socketId === socketId);
+    return game.players.find((p) => p.socketId === socketId);
   }
 
   getPlayerById(playerId: string, game: Game): Player | undefined {
-    return game.players.find(p => p.id === playerId);
+    return game.players.find((p) => p.id === playerId);
   }
 
   getConnectedPlayers(game: Game): Player[] {
-    return game.players.filter(p => p.isConnected && !p.isHost);
+    return game.players.filter((p) => p.isConnected && !p.isHost);
   }
 
   getHost(game: Game): Player | undefined {
-    return game.players.find(p => p.isHost);
+    return game.players.find((p) => p.isHost);
   }
 
   isHost(socketId: string, game: Game): boolean {
@@ -90,162 +90,141 @@ export class PlayerManager {
     return player?.isHost ?? false;
   }
 
-  submitAnswer(game: Game, playerId: string, answerIndex: number, isPersistentId: boolean = false): boolean {
-    const player = isPersistentId 
-      ? this.getPlayerById(playerId, game)
-      : this.getPlayerBySocketId(playerId, game);
+  submitAnswer(
+    game: Game,
+    playerIdOrSocketId: string,
+    answerIndex: number,
+    isPersistentId: boolean = false
+  ): boolean {
+    const player = isPersistentId
+      ? this.getPlayerById(playerIdOrSocketId, game)
+      : this.getPlayerBySocketId(playerIdOrSocketId, game);
 
-    if (!player || player.isHost) {
-      return false;
-    }
+    if (!player || player.isHost) return false;
 
-    // Don't allow duplicate answers
-    if (player.currentAnswer !== undefined) {
-      // Removed console.log
-      return false;
-    }
+    // Prevent duplicate answers
+    if (player.currentAnswer !== undefined) return false;
 
+    // Store index for now; we derive text later
     player.currentAnswer = answerIndex;
     player.answerTime = Date.now();
-    
-    // Removed console.log
     return true;
   }
 
   clearAnswers(game: Game): void {
-    game.players.forEach(player => {
+    game.players.forEach((player) => {
       if (!player.isHost) {
         delete player.currentAnswer;
         delete player.answerTime;
+        player.wasCorrect = undefined;
+        player.pointsEarned = undefined;
       }
     });
   }
 
   storeAnswersToHistory(game: Game): void {
-    const question = game.questions[game.currentQuestionIndex];
-    if (!question) return;
+    const currentQuestion = game.questions[game.currentQuestionIndex];
+    if (!currentQuestion) return;
 
-    const questionStartTime = game.questionStartTime || Date.now();
+    const questionStartTime = game.questionStartTime ?? Date.now();
 
-    game.players.forEach(player => {
-      if (!player.isHost) {
-        const responseTime = player.answerTime ? (player.answerTime - questionStartTime) : 0;
-        const wasCorrect = typeof player.currentAnswer === "number" && question.options[player.currentAnswer] === question.correctAnswer;
-      
-        // Calculate points earned for this question
-        let pointsEarned = 0;
-        if (wasCorrect && player.currentAnswer !== undefined) {
-          const answerTimeLimit = game.settings.answerTime * 1000;
-          const timeUsedRatio = responseTime / answerTimeLimit;
-          
-          // Apply dyslexia support: 20% slower score reduction
-          let adjustedTimeUsedRatio = timeUsedRatio;
-          if (player.hasDyslexiaSupport) {
-            adjustedTimeUsedRatio = timeUsedRatio * 0.8; // 20% reduction in time penalty
-          }
-          
-          pointsEarned = Math.max(0, Math.round(1000 * (1 - adjustedTimeUsedRatio)));
+    game.players.forEach((player) => {
+      if (player.isHost) return;
+
+      const responseTime = player.answerTime
+        ? player.answerTime - questionStartTime
+        : 0;
+
+      const answerIndex =
+        typeof player.currentAnswer === 'number' ? player.currentAnswer : null;
+
+      const answerText =
+        typeof player.currentAnswer === 'string'
+          ? player.currentAnswer
+          : typeof player.currentAnswer === 'number'
+          ? currentQuestion.options[player.currentAnswer] ?? null
+          : null;
+
+      const wasCorrect =
+        !!answerText && answerText === currentQuestion.correctAnswer;
+
+      // Points calculation (time‑based, with dyslexia adjustment)
+      let pointsEarned = 0;
+      if (wasCorrect && player.answerTime) {
+        const answerTimeLimitMs = game.settings.answerTime * 1000;
+        const timeUsedRatio = responseTime / answerTimeLimitMs;
+
+        let adjustedRatio = timeUsedRatio;
+        if (player.hasDyslexiaSupport) {
+          adjustedRatio = timeUsedRatio * 0.8; // 20% less penalty
         }
 
-       const answerIndex =
-  typeof player.currentAnswer === "number"
-    ? player.currentAnswer
-    : null;
-
-const answerText =
-  typeof player.currentAnswer === "string"
-    ? player.currentAnswer
-    : (typeof player.currentAnswer === "number"
-        ? question.options[player.currentAnswer]
-        : null);
-
-const answerRecord: AnswerRecord = {
-  playerId: player.id,
-  playerName: player.name,
-  questionIndex: game.currentQuestionIndex,
-  questionId: currentQuestion.id,
-  answerIndex,
-  answerText,
-  answerTime: player.answerTime,
-  responseTime,
-  pointsEarned,
-  wasCorrect,
-  hasDyslexiaSupport: player.hasDyslexiaSupport ?? false
-};
-
-game.answerHistory.push(answerRecord);
+        pointsEarned = Math.max(0, Math.round(1000 * (1 - adjustedRatio)));
       }
+
+      const answerRecord: AnswerRecord = {
+        playerId: player.id,
+        playerName: player.name,
+        questionIndex: game.currentQuestionIndex,
+        questionId: currentQuestion.id,
+        answerIndex,
+        answerText,
+        answerTime: player.answerTime,
+        responseTime,
+        pointsEarned,
+        wasCorrect,
+        hasDyslexiaSupport: player.hasDyslexiaSupport ?? false
+      };
+
+      game.answerHistory.push(answerRecord);
     });
   }
 
-updateScores(game: Game, correctAnswer: string) {
-  const THINK_TIME = game.settings.thinkTime ?? 5;
-  const ANSWER_TIME = game.settings.answerTime ?? 20;
+  updateScores(game: Game, correctAnswer: string): void {
+    for (const player of game.players) {
+      if (player.isHost) continue;
 
-  for (const player of game.players) {
-    // Skip host
-    if (player.isHost) continue;
+      const submission = [...game.answerHistory]
+        .filter(
+          (a) =>
+            a.playerId === player.id &&
+            a.questionIndex === game.currentQuestionIndex
+        )
+        .pop();
 
-    const submission = game.answerHistory.find(
-      (a) => a.playerId === player.id && a.questionIndex === game.currentQuestionIndex
-    );
+      if (!submission) {
+        player.wasCorrect = false;
+        player.pointsEarned = 0;
+        player.streak = 0;
+        continue;
+      }
 
-    if (!submission) {
-      // No answer submitted
-      player.wasCorrect = false;
-      player.pointsEarned = 0;
-      player.streak = 0;
-      continue;
+      const isCorrect =
+        submission.answerText != null &&
+        submission.answerText === correctAnswer;
+
+      player.wasCorrect = isCorrect;
+
+      if (!isCorrect) {
+        player.pointsEarned = 0;
+        player.streak = 0;
+        continue;
+      }
+
+      // Use points from history (already time‑adjusted)
+      const points = submission.pointsEarned ?? 0;
+
+      // Streak handling
+      player.streak = (player.streak ?? 0) + 1;
+
+      player.pointsEarned = points;
+      player.score += points;
     }
-
-    const playerAnswer = submission.answer; // STRING
-    const submittedAt = submission.timestamp;
-
-    // -----------------------------
-    // 1. Correctness
-    // -----------------------------
-    const isCorrect = playerAnswer === correctAnswer;
-    player.wasCorrect = isCorrect;
-
-    if (!isCorrect) {
-      player.pointsEarned = 0;
-      player.streak = 0;
-      continue;
-    }
-
-    // -----------------------------
-    // 2. Base Points
-    // -----------------------------
-    let points = 100;
-
-    // -----------------------------
-    // 3. Streak Bonus
-    // -----------------------------
-    player.streak = (player.streak ?? 0) + 1;
-
-    if (player.streak >= 3) points += 50;
-    if (player.streak >= 5) points += 100;
-
-    // -----------------------------
-    // 4. Speed Bonus
-    // -----------------------------
-    const questionStart = game.questionStartTime;
-    const elapsed = (submittedAt - questionStart) / 1000;
-
-    if (elapsed < ANSWER_TIME * 0.25) points += 50; // super fast
-    else if (elapsed < ANSWER_TIME * 0.5) points += 25; // fast
-
-    // -----------------------------
-    // 5. Apply Points
-    // -----------------------------
-    player.pointsEarned = points;
-    player.score += points;
   }
-}
 
   getLeaderboard(game: Game): Player[] {
     return game.players
-      .filter(p => !p.isHost)
+      .filter((p) => !p.isHost)
       .sort((a, b) => b.score - a.score);
   }
 
@@ -272,7 +251,6 @@ updateScores(game: Game, correctAnswer: string) {
 
     const rows: string[] = [headers.join('\t')];
 
-    // Sort answers by question index, then by player name
     const sortedAnswers = [...game.answerHistory].sort((a, b) => {
       if (a.questionIndex !== b.questionIndex) {
         return a.questionIndex - b.questionIndex;
@@ -280,38 +258,35 @@ updateScores(game: Game, correctAnswer: string) {
       return a.playerName.localeCompare(b.playerName);
     });
 
-    sortedAnswers.forEach(answerRecord => {
+    sortedAnswers.forEach((answerRecord) => {
       const question = game.questions[answerRecord.questionIndex];
       if (!question) return;
 
-      // Get question start time for this specific question
-      // Since we don't store per-question start times, we'll estimate based on answer time
-      const questionStartTime = answerRecord.answerTime ? 
-        new Date(answerRecord.answerTime - answerRecord.responseTime) : 
-        new Date();
-      
-      const questionDatetime = questionStartTime.toISOString();
-      const choiceDatetime = answerRecord.answerTime ? 
-        new Date(answerRecord.answerTime).toISOString() : 
-        '';
+      const questionStartTime = answerRecord.answerTime
+        ? new Date(answerRecord.answerTime - answerRecord.responseTime)
+        : new Date();
 
-      // Separate correct and wrong propositions
-      const correctProposition = question.options[question.correctAnswer];
-      const wrongPropositions = question.options.filter((_, index) => index !== question.correctAnswer);
-      
-      // Pad wrong propositions to ensure we have exactly 3 (fill with empty strings if needed)
+      const questionDatetime = questionStartTime.toISOString();
+      const choiceDatetime = answerRecord.answerTime
+        ? new Date(answerRecord.answerTime).toISOString()
+        : '';
+
+      const correctProposition = question.correctAnswer;
+
+      const wrongPropositions = question.options.filter(
+        (opt) => opt !== question.correctAnswer
+      );
+
       while (wrongPropositions.length < 3) {
         wrongPropositions.push('');
       }
 
-      const choiceString = answerRecord.answerIndex !== null 
-        ? question.options[answerRecord.answerIndex] 
-        : '';
+      const choiceString = answerRecord.answerText ?? '';
 
       const row = [
         answerRecord.questionIndex.toString(),
         questionDatetime,
-        question.question.replace(/\t/g, ' '), // Remove tabs from question text
+        question.prompt.replace(/\t/g, ' '),
         correctProposition.replace(/\t/g, ' '),
         wrongPropositions[0].replace(/\t/g, ' '),
         wrongPropositions[1].replace(/\t/g, ' '),
@@ -330,15 +305,11 @@ updateScores(game: Game, correctAnswer: string) {
     return rows.join('\n');
   }
 
-  // New method to toggle dyslexia support for a player
   toggleDyslexiaSupport(game: Game, playerId: string): boolean {
     const player = this.getPlayerById(playerId, game);
-    if (!player || player.isHost) {
-      return false;
-    }
+    if (!player || player.isHost) return false;
 
     player.hasDyslexiaSupport = !player.hasDyslexiaSupport;
-    // Removed console.log
     return true;
   }
-} 
+}
