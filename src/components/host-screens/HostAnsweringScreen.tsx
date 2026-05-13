@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Question } from '@/types/game';
-import { getChoiceColor } from '@/lib/palette';
+import { getChoiceColor } from '@/lib/client/palette';
 import { useCountdownMusic } from '@/lib/useCountdownMusic';
 import Image from 'next/image';
 

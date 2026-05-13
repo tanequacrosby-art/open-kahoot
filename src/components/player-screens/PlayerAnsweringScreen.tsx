@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslation } from 'react-i18next';
-import { getChoiceColor } from '@/lib/palette';
+import { getChoiceColor } from '@/lib/client/palette';
 
 interface PlayerAnsweringScreenProps {
   onSubmitAnswer: (answerIndex: number) => void;

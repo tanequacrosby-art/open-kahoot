@@ -1,4 +1,4 @@
-import { card } from '@/lib/palette';
+import { card } from '@/lib/client/palette';
 
 interface CardProps {
   children: React.ReactNode;

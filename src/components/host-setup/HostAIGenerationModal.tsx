@@ -6,7 +6,7 @@ import { Sparkles } from 'lucide-react';
 import Button from '@/components/Button';
 import Input from '@/components/Input';
 import Modal from '@/components/Modal';
-import { accent } from '@/lib/palette';
+import { accent } from '@/lib/client/palette';
 
 interface HostAIGenerationModalProps {
   isOpen: boolean;

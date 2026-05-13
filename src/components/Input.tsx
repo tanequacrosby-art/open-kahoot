@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 import { LucideIcon } from 'lucide-react';
-import { accent } from '@/lib/palette';
+import { accent } from '@/lib/client/palette';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;

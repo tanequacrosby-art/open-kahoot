@@ -1,6 +1,6 @@
 import React from 'react';
 import { LucideIcon } from 'lucide-react';
-import { accent } from '@/lib/palette';
+import { accent } from '@/lib/client/palette';
 
 interface ButtonProps {
   children?: React.ReactNode;

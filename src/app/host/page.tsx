@@ -3,8 +3,8 @@
 import { useTranslations } from "next-intl";
 import PageLayout from "@/components/PageLayout";
 import Hero from "@/components/Hero";
-import { startGame } from "@/lib/clientGameActions";
-import { loadReadingSOLSet } from "@/lib/loadReadingSOL";
+import { startGame } from "@/lib/client/clientGameActions";
+import { loadReadingSOLSet } from "@/lib/client/loadReadingSOL";
 import type { Question } from "@/types/game";
 
 export default function HostPage() {

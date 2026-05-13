@@ -1,5 +1,5 @@
 import React from 'react'
-import { getGradient } from '@/lib/palette';
+import { getGradient } from '@/lib/client/palette';
 import AnimatedIcon from '@/components/AnimatedIcon';
 import { LucideIcon } from 'lucide-react';
 

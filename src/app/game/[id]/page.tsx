@@ -3,7 +3,7 @@
 import { useEffect, useReducer } from 'react';
 import { useParams, useSearchParams, useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
-import { getSocket } from '@/lib/socket-client';
+import { getSocket } from '@/lib/client/socket-client';
 import type { Game, Question, GameStats, Player, PersonalResult, GamePhase } from '@/types/game';
 // Game Screen Components
 import GameValidationScreen from '@/components/game-screens/GameValidationScreen';

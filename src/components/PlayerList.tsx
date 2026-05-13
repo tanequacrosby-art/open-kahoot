@@ -1,6 +1,6 @@
 import { Brain } from 'lucide-react';
 import type { Player } from '@/types/game';
-import { accent } from '@/lib/palette';
+import { accent } from '@/lib/client/palette';
 
 interface PlayerListProps {
   players: Player[];

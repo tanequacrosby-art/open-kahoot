@@ -2,7 +2,7 @@
 
 import { Clock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { getGradient, accent } from '@/lib/palette';
+import { getGradient, accent } from '@/lib/client/palette';
 import HostAnsweringScreen from '@/components/host-screens/HostAnsweringScreen';
 import PlayerAnsweringScreen from '@/components/player-screens/PlayerAnsweringScreen';
 import PlayerWaitingScreen from '@/components/player-screens/PlayerWaitingScreen';

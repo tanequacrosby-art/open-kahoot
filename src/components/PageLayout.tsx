@@ -1,4 +1,4 @@
-import { gradients } from '@/lib/palette';
+import { gradients } from '@/lib/client/palette';
 import Link from 'next/link';
 
 interface PageLayoutProps {

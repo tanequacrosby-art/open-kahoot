@@ -2,7 +2,7 @@ import { Trophy, LucideIcon } from 'lucide-react';
 import type { Player } from '@/types/game';
 import Button from './Button';
 import AnimatedIcon from './AnimatedIcon';
-import { palette } from '@/lib/palette';
+import { palette } from '@/lib/client/palette';
 
 interface LeaderboardProps {
   players: Player[];

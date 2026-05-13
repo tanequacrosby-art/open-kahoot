@@ -2,7 +2,7 @@
 
 import { Trophy } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { getGradient } from '@/lib/palette';
+import { getGradient } from '@/lib/client/palette';
 import AnimatedIcon from '@/components/AnimatedIcon';
 import HostResultsScreen from '@/components/host-screens/HostResultsScreen';
 import PlayerResultsScreen from '@/components/player-screens/PlayerResultsScreen';

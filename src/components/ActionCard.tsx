@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { LucideIcon } from 'lucide-react';
-import { actionCards } from '@/lib/palette';
+import { actionCards } from '@/lib/client/palette';
 
 interface ActionCardProps {
   href: string;

@@ -1,5 +1,5 @@
 import { Clock, Eye } from 'lucide-react';
-import { palette } from '@/lib/palette';
+import { palette } from '@/lib/client/palette';
 
 interface TimerProps {
   timeLeft: number;

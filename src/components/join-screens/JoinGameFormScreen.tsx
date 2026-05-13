@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { LogIn, Lock, Dice6 } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
-import { getSocket } from '@/lib/socket-client';
+import { getSocket } from '@/lib/client/socket-client';
 import type { Game } from '@/types/game';
 import { gameConfig, featureConfig } from '@/lib/config';
 import Button from '@/components/Button';

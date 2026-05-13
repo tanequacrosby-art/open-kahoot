@@ -2,7 +2,7 @@
 
 import { useTranslation } from 'react-i18next';
 import type { GameSettings } from '@/types/game';
-import { accent } from '@/lib/palette';
+import { accent } from '@/lib/client/palette';
 
 interface HostGameSettingsSectionProps {
   gameSettings: GameSettings;

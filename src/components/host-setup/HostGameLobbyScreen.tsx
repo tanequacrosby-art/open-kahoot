@@ -10,7 +10,7 @@ import GamePinDisplay from '@/components/GamePinDisplay';
 import PlayerList from '@/components/PlayerList';
 import Button from '@/components/Button';
 import { useCountdownMusic } from '@/lib/useCountdownMusic';
-import { getSocket } from '@/lib/socket-client';
+import { getSocket } from '@/lib/client/socket-client';
 
 interface HostGameLobbyScreenProps {
   game: Game;

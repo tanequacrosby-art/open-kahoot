@@ -1,6 +1,6 @@
 import { Ban } from 'lucide-react';
 import Button from './Button';
-import { getGradient } from '@/lib/palette';
+import { getGradient } from '@/lib/client/palette';
 import AnimatedIcon from '@/components/AnimatedIcon';
 
 interface ErrorScreenProps {
