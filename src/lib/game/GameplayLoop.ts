@@ -371,14 +371,14 @@ if (host?.isConnected && stats) {
 
           const delay = isHost ? 2000 : 100;
 
-          setTimeout(() => {
-            const elapsed = Date.now() - game.questionStartTime;
-            const remaining = Math.max(
-              0,
-              game.settings.answerTime - Math.floor(elapsed / 1000)
-            );
-            this.io.to(socketId).emit('answeringPhase', remaining);
-          }, delay);
+         setTimeout(() => {
+  const elapsed = Date.now() - (game.questionStartTime ?? Date.now());
+  const remaining = Math.max(
+    0,
+    game.settings.answerTime - Math.floor(elapsed / 1000)
+  );
+  this.io.to(socketId).emit('answeringPhase', remaining);
+}, delay);
         }
         break;
       }
