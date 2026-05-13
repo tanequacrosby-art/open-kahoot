@@ -1,19 +1,33 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import type { Question } from "@/types/game";
+import type { Question, Game } from "@/types/game";
+import { v4 as uuidv4 } from "uuid";
 
-// This function creates a game session and redirects the host to the game screen
+// Temporary in‑memory store (Netlify safe)
+const GAME_STORE: Record<string, Game> = {};
+
 export async function createGameWithQuestions(questions: Question[]) {
-  // Store the questions in a temporary session (in-memory or DB)
-  // For now, we’ll use a simple global store (works on Netlify too)
+  const id = uuidv4().slice(0, 8);
 
-  globalThis.__GAME__ = {
-    id: Math.random().toString(36).slice(2, 8),
+  const game: Game = {
+    id,
+    pin: id, // or generate a PIN elsewhere
+    hostId: "",
+    title: "New Game",
     questions,
-    createdAt: Date.now(),
+    settings: {
+      thinkTime: 5,
+      answerTime: 20
+    },
+    currentQuestionIndex: -1,
+    status: "waiting",
+    phase: "waiting",
+    players: [],
+    answerHistory: []
   };
 
-  // Redirect host to the game lobby
-  redirect(`/game/${globalThis.__GAME__.id}`);
+  GAME_STORE[id] = game;
+
+  redirect(`/game/${id}`);
 }
