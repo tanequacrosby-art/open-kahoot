@@ -234,9 +234,9 @@ export class GameplayLoop {
     }
 
     const host = this.playerManager.getHost(game);
-    if (host?.isConnected) {
-      this.io.to(host.socketId).emit('hostResults', stats);
-    }
+if (host?.isConnected && stats) {
+  this.io.to(host.socketId).emit('hostResults', stats);
+}
 
     game.players.forEach((player) => {
       if (!player.isHost) {
