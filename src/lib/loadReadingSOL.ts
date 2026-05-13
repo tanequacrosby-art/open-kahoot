@@ -7,10 +7,11 @@ import type { Question } from "@/types/game";
 
 type RawSOLQuestion = {
   id: string;
-  standard: string;
-  question: string;      // old prompt
-  choices: string[];     // old options
-  answerIndex: number;   // old correct answer index
+  sol_standard: string;
+  ccss_standard: string;
+  question: string;
+  choices: string[];
+  answerIndex: number;
 };
 
 export function loadReadingSOLSet(standard: "3.5" | "4.4" | "5.5"): Question[] {
@@ -28,19 +29,17 @@ export function loadReadingSOLSet(standard: "3.5" | "4.4" | "5.5"): Question[] {
   const expanded: Question[] = [];
 
   for (const q of baseQuestions) {
-    // Convert old JSON → new Question format
     const baseConverted: Question = {
       id: q.id,
       prompt: q.question,
       options: q.choices,
       correctAnswer: q.choices[q.answerIndex],
       timeLimit: 20,
-      standard: q.standard,
+      standard: q.sol_standard,
       explanation: undefined,
       image: undefined
     };
 
-    // Determine variation type
     const type =
       q.question.includes("mean") ? "vocab" :
       q.question.includes("infer") ? "inference" :
@@ -48,20 +47,18 @@ export function loadReadingSOLSet(standard: "3.5" | "4.4" | "5.5"): Question[] {
 
     const vocabWord = q.question.match(/"(.*?)"/)?.[1];
 
-    // Generate variations using the converted base question
     const variants = generateVariationsForQuestion(baseConverted, {
       type,
       vocabWord
     });
 
-    // Ensure all variants are valid Question objects
     const cleanedVariants: Question[] = variants.map((v, i) => ({
       id: `${q.id}-v${i + 1}`,
       prompt: v.prompt ?? baseConverted.prompt,
       options: v.options ?? baseConverted.options,
       correctAnswer: v.correctAnswer ?? baseConverted.correctAnswer,
       timeLimit: v.timeLimit ?? 20,
-      standard: v.standard ?? q.standard,
+      standard: v.standard ?? q.sol_standard,
       explanation: v.explanation,
       image: v.image
     }));
