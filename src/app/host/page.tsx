@@ -3,7 +3,7 @@
 import { useTranslations } from "next-intl";
 import PageLayout from "@/components/PageLayout";
 import Hero from "@/components/Hero";
-import { createGameWithQuestions } from "@/lib/gameActions";
+import { startGame } from "@/lib/clientGameActions";
 import { loadReadingSOLSet } from "@/lib/loadReadingSOL";
 import type { Question } from "@/types/game";
 
@@ -20,8 +20,8 @@ export default function HostPage() {
         <button
           className="p-6 bg-white rounded-xl shadow hover:shadow-lg transition"
           onClick={() => {
-            const gameQuestions: Question[] = loadReadingSOLSet("3.5");
-            createGameWithQuestions(gameQuestions);
+            const questions: Question[] = loadReadingSOLSet("3.5");
+            startGame(questions);
           }}
         >
           Reading SOL 3.5 (Grade 3)
@@ -31,8 +31,8 @@ export default function HostPage() {
         <button
           className="p-6 bg-white rounded-xl shadow hover:shadow-lg transition"
           onClick={() => {
-            const gameQuestions: Question[] = loadReadingSOLSet("4.4");
-            createGameWithQuestions(gameQuestions);
+            const questions: Question[] = loadReadingSOLSet("4.4");
+            startGame(questions);
           }}
         >
           Reading SOL 4.4 (Grade 4)
@@ -42,8 +42,8 @@ export default function HostPage() {
         <button
           className="p-6 bg-white rounded-xl shadow hover:shadow-lg transition"
           onClick={() => {
-            const gameQuestions: Question[] = loadReadingSOLSet("5.5");
-            createGameWithQuestions(gameQuestions);
+            const questions: Question[] = loadReadingSOLSet("5.5");
+            startGame(questions);
           }}
         >
           Reading SOL 5.5 (Grade 5)
