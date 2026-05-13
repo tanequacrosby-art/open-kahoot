@@ -129,7 +129,7 @@ export class PlayerManager {
     game.players.forEach(player => {
       if (!player.isHost) {
         const responseTime = player.answerTime ? (player.answerTime - questionStartTime) : 0;
-        const wasCorrect = player.currentAnswer === question.correctAnswer;
+        const wasCorrect = player.currentAnswer !== undefined && question.options[player.currentAnswer] === question.correctAnswer;
         
         // Calculate points earned for this question
         let pointsEarned = 0;
