@@ -1,10 +1,8 @@
 "use server";
 
-import { redirect } from "next/navigation";
 import type { Question, Game } from "@/types/game";
 import { v4 as uuidv4 } from "uuid";
 
-// Temporary in‑memory store (Netlify safe)
 const GAME_STORE: Record<string, Game> = {};
 
 export async function createGameWithQuestions(questions: Question[]) {
@@ -12,7 +10,7 @@ export async function createGameWithQuestions(questions: Question[]) {
 
   const game: Game = {
     id,
-    pin: id, // or generate a PIN elsewhere
+    pin: id,
     hostId: "",
     title: "New Game",
     questions,
@@ -29,5 +27,7 @@ export async function createGameWithQuestions(questions: Question[]) {
 
   GAME_STORE[id] = game;
 
-  redirect(`/game/${id}`);
+  // ❌ remove redirect()
+  // return the ID instead
+  return id;
 }
