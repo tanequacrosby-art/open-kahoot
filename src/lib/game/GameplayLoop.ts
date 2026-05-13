@@ -350,7 +350,7 @@ if (host?.isConnected && stats) {
       case 'thinking': {
         const q = this.questionManager.getCurrentQuestion(game);
         if (q) {
-          const elapsed = Date.now() - game.phaseStartTime;
+         const elapsed = Date.now() - (game.phaseStartTime ?? Date.now());
           const remaining = Math.max(
             0,
             game.settings.thinkTime - Math.floor(elapsed / 1000)
