@@ -146,20 +146,33 @@ export class PlayerManager {
           pointsEarned = Math.max(0, Math.round(1000 * (1 - adjustedTimeUsedRatio)));
         }
 
-        const answerRecord = {
-          playerId: player.id,
-          playerName: player.name,
-          questionIndex: game.currentQuestionIndex,
-          questionId: question.id,
-          answerIndex: player.currentAnswer ?? null,
-          answerTime: player.answerTime,
-          responseTime: responseTime,
-          pointsEarned: pointsEarned,
-          wasCorrect: wasCorrect && player.currentAnswer !== undefined,
-          hasDyslexiaSupport: player.hasDyslexiaSupport || false
-        };
+       const answerIndex =
+  typeof player.currentAnswer === "number"
+    ? player.currentAnswer
+    : null;
 
-        game.answerHistory.push(answerRecord);
+const answerText =
+  typeof player.currentAnswer === "string"
+    ? player.currentAnswer
+    : (typeof player.currentAnswer === "number"
+        ? question.options[player.currentAnswer]
+        : null);
+
+const answerRecord: AnswerRecord = {
+  playerId: player.id,
+  playerName: player.name,
+  questionIndex: game.currentQuestionIndex,
+  questionId: currentQuestion.id,
+  answerIndex,
+  answerText,
+  answerTime: player.answerTime,
+  responseTime,
+  pointsEarned,
+  wasCorrect,
+  hasDyslexiaSupport: player.hasDyslexiaSupport ?? false
+};
+
+game.answerHistory.push(answerRecord);
       }
     });
   }
