@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { Game, Player } from '@/types/game';
+import type { AnswerRecord } from '@/types/game';
 
 export interface JoinGameResult {
   success: boolean;
