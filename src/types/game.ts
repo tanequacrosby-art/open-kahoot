@@ -37,15 +37,21 @@ export type GamePhase =
   | "finished";
 
 export interface Player {
-  id: string;                 // Persistent player ID (UUID)
-  socketId: string;           // Current socket connection ID
+  id: string;
   name: string;
-  score: number;
+  socketId: string;
   isHost: boolean;
-  currentAnswer?: number;
-  answerTime?: number;
   isConnected: boolean;
-  hasDyslexiaSupport?: boolean;
+
+  // ADD THESE:
+  wasCorrect?: boolean;
+  pointsEarned?: number;
+  streak?: number;
+
+  // Whatever else you already have:
+  score: number;
+  currentAnswer?: number | string;
+  answerTime?: number;
 }
 
 export interface Game {
