@@ -34,7 +34,7 @@ export function loadReadingSOLSet(standard: "3.5" | "4.4" | "5.5"): Question[] {
       prompt: q.question,
       options: q.choices,
       correctAnswer: q.choices[q.answerIndex],
-      timeLimit: 20, // default or override later
+      timeLimit: 20,
       standard: q.standard,
       explanation: undefined,
       image: undefined
@@ -54,9 +54,20 @@ export function loadReadingSOLSet(standard: "3.5" | "4.4" | "5.5"): Question[] {
       vocabWord
     });
 
-    expanded.push(baseConverted, ...variants);
+    // Ensure all variants are valid Question objects
+    const cleanedVariants: Question[] = variants.map((v, i) => ({
+      id: `${q.id}-v${i + 1}`,
+      prompt: v.prompt ?? baseConverted.prompt,
+      options: v.options ?? baseConverted.options,
+      correctAnswer: v.correctAnswer ?? baseConverted.correctAnswer,
+      timeLimit: v.timeLimit ?? 20,
+      standard: v.standard ?? q.standard,
+      explanation: v.explanation,
+      image: v.image
+    }));
+
+    expanded.push(baseConverted, ...cleanedVariants);
   }
 
-  // Shuffle for randomness
   return expanded.sort(() => Math.random() - 0.5);
 }
