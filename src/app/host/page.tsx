@@ -5,19 +5,7 @@ import PageLayout from "@/components/PageLayout";
 import Hero from "@/components/Hero";
 import { createGameWithQuestions } from "@/lib/gameActions";
 import { loadReadingSOLSet } from "@/lib/loadReadingSOL";
-import type { SOLQuestion } from "@/types/sol";
 import type { Question } from "@/types/game";
-
-function convertSOLToGameQuestions(solQuestions: SOLQuestion[]): Question[] {
-  return solQuestions.map((q) => ({
-    id: q.id,
-    prompt: q.question,
-    options: q.choices,
-    correctAnswer: q.choices[q.answerIndex],
-    timeLimit: 30,
-    standard: q.standard,
-  }));
-}
 
 export default function HostPage() {
   const t = useTranslations("host");
@@ -32,8 +20,7 @@ export default function HostPage() {
         <button
           className="p-6 bg-white rounded-xl shadow hover:shadow-lg transition"
           onClick={() => {
-            const sol = loadReadingSOLSet("3.5");
-            const gameQuestions = convertSOLToGameQuestions(sol);
+            const gameQuestions: Question[] = loadReadingSOLSet("3.5");
             createGameWithQuestions(gameQuestions);
           }}
         >
@@ -44,8 +31,7 @@ export default function HostPage() {
         <button
           className="p-6 bg-white rounded-xl shadow hover:shadow-lg transition"
           onClick={() => {
-            const sol = loadReadingSOLSet("4.4");
-            const gameQuestions = convertSOLToGameQuestions(sol);
+            const gameQuestions: Question[] = loadReadingSOLSet("4.4");
             createGameWithQuestions(gameQuestions);
           }}
         >
@@ -56,8 +42,7 @@ export default function HostPage() {
         <button
           className="p-6 bg-white rounded-xl shadow hover:shadow-lg transition"
           onClick={() => {
-            const sol = loadReadingSOLSet("5.5");
-            const gameQuestions = convertSOLToGameQuestions(sol);
+            const gameQuestions: Question[] = loadReadingSOLSet("5.5");
             createGameWithQuestions(gameQuestions);
           }}
         >
