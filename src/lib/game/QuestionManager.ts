@@ -1,25 +1,25 @@
-import type { Game, Question, GameStats, PersonalResult } from '@/types/game';
+import type { Game, Question, GameStats, PersonalResult, AnswerRecord } from '@/types/game';
 
 export class QuestionManager {
   startNextQuestion(game: Game): Question | null {
     const nextIndex = game.currentQuestionIndex + 1;
-    
+
     if (nextIndex >= game.questions.length) {
       return null; // No more questions
     }
 
     game.currentQuestionIndex = nextIndex;
-    // Update status to indicate a question is active - GameplayLoop will manage detailed phases
     game.status = 'preparation';
 
     const question = game.questions[nextIndex];
-    // Removed console.log
-    
     return question;
   }
 
   getCurrentQuestion(game: Game): Question | undefined {
-    if (game.currentQuestionIndex < 0 || game.currentQuestionIndex >= game.questions.length) {
+    if (
+      game.currentQuestionIndex < 0 ||
+      game.currentQuestionIndex >= game.questions.length
+    ) {
       return undefined;
     }
     return game.questions[game.currentQuestionIndex];
@@ -29,27 +29,33 @@ export class QuestionManager {
     const question = this.getCurrentQuestion(game);
     if (!question) return undefined;
 
-    const players = game.players.filter(p => !p.isHost);
-    const totalPlayers = players.length;
-    
-    // Count answers for each option
+    const totalPlayers = game.players.filter((p) => !p.isHost).length;
+
     const answerCounts = new Array(question.options.length).fill(0);
     let correctAnswers = 0;
-    
-    players.forEach(player => {
-      if (player.currentAnswer !== undefined) {
-        answerCounts[player.currentAnswer]++;
-        if (player.currentAnswer === question.correctAnswer) {
-          correctAnswers++;
-        }
+
+    const recordsForQuestion: AnswerRecord[] = game.answerHistory.filter(
+      (r) => r.questionIndex === game.currentQuestionIndex
+    );
+
+    recordsForQuestion.forEach((record) => {
+      if (
+        record.answerIndex !== null &&
+        record.answerIndex >= 0 &&
+        record.answerIndex < question.options.length
+      ) {
+        answerCounts[record.answerIndex]++;
+      }
+      if (record.wasCorrect) {
+        correctAnswers++;
       }
     });
 
-    // Calculate percentages
     const answers = answerCounts.map((count, index) => ({
       optionIndex: index,
       count,
-      percentage: totalPlayers > 0 ? Math.round((count / totalPlayers) * 100) : 0
+      percentage:
+        totalPlayers > 0 ? Math.round((count / totalPlayers) * 100) : 0
     }));
 
     return {
@@ -61,44 +67,33 @@ export class QuestionManager {
   }
 
   getPersonalResult(game: Game, playerId: string): PersonalResult | undefined {
-    const player = game.players.find(p => p.id === playerId);
+    const player = game.players.find((p) => p.id === playerId);
     const question = this.getCurrentQuestion(game);
-    
+
     if (!player || !question || player.isHost) {
       return undefined;
     }
 
-    const wasCorrect = player.currentAnswer === question.correctAnswer;
-    
-    // Calculate points earned for this question
-    let pointsEarned = 0;
-    if (wasCorrect) {
-      const questionStartTime = game.questionStartTime || Date.now();
-      const responseTime = (player.answerTime || Date.now()) - questionStartTime;
-      const answerTimeLimit = game.settings.answerTime * 1000;
-      const maxPoints = 1000;
-      const timeUsedRatio = responseTime / answerTimeLimit;
-      
-      // Apply dyslexia support: 20% slower score reduction
-      let adjustedTimeUsedRatio = timeUsedRatio;
-      if (player.hasDyslexiaSupport) {
-        adjustedTimeUsedRatio = timeUsedRatio * 0.8; // 20% reduction in time penalty
-      }
-      
-      pointsEarned = Math.max(0, Math.round(maxPoints * (1 - adjustedTimeUsedRatio)));
-    }
+    const submission = [...game.answerHistory]
+      .filter(
+        (r) =>
+          r.playerId === playerId &&
+          r.questionIndex === game.currentQuestionIndex
+      )
+      .pop();
 
-    // Get leaderboard to determine position
+    const wasCorrect = submission?.wasCorrect ?? false;
+    const pointsEarned = submission?.pointsEarned ?? 0;
+
     const leaderboard = game.players
-      .filter(p => !p.isHost)
+      .filter((p) => !p.isHost)
       .sort((a, b) => b.score - a.score);
-    
-    const position = leaderboard.findIndex(p => p.id === playerId) + 1;
-    
-    // Calculate points behind leader and get next player info
+
+    const position = leaderboard.findIndex((p) => p.id === playerId) + 1;
+
     let pointsBehind = 0;
     let nextPlayerName: string | null = null;
-    
+
     if (position > 1) {
       const playerAbove = leaderboard[position - 2];
       pointsBehind = playerAbove.score - player.score;
@@ -117,16 +112,20 @@ export class QuestionManager {
   }
 
   hasAllPlayersAnswered(game: Game): boolean {
-    const activePlayers = game.players.filter(p => !p.isHost && p.isConnected);
-    return activePlayers.every(p => p.currentAnswer !== undefined);
+    const activePlayers = game.players.filter(
+      (p) => !p.isHost && p.isConnected
+    );
+    return activePlayers.every((p) => p.currentAnswer !== undefined);
   }
 
   getAnsweredPlayerCount(game: Game): number {
-    return game.players.filter(p => !p.isHost && p.currentAnswer !== undefined).length;
+    return game.players.filter(
+      (p) => !p.isHost && p.currentAnswer !== undefined
+    ).length;
   }
 
   getTotalActivePlayerCount(game: Game): number {
-    return game.players.filter(p => !p.isHost && p.isConnected).length;
+    return game.players.filter((p) => !p.isHost && p.isConnected).length;
   }
 
   isLastQuestion(game: Game): boolean {
@@ -139,4 +138,4 @@ export class QuestionManager {
       total: game.questions.length
     };
   }
-} 
+}
