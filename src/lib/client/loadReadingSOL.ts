@@ -2,7 +2,7 @@ import base35 from "@/sol-questions/reading_3_5.json";
 import base44 from "@/sol-questions/reading_4_4.json";
 import base55 from "@/sol-questions/reading_5_5.json";
 
-import { generateVariationsForQuestion } from "@/lib/readingVariationEngine";
+import { generateVariationsForQuestion } from "@/lib/client/readingVariationEngine";
 import type { Question } from "@/types/game";
 
 type RawSOLQuestion = {
