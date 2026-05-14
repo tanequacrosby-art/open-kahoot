@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import type { Game, Question, GameSettings, GamePhase } from '@/types/game';
-import { gameConfig } from '@/lib/config';
+import { gameConfig } from '@/lib/server/config';
 
 export class GameManager {
   private games: Map<string, Game> = new Map();

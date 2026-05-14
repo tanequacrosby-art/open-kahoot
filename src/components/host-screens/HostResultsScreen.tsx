@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { GameStats } from '@/types/game';
 import Button from '@/components/Button';
 import { ChevronRight } from 'lucide-react';
-import { useCountdownMusic } from '@/lib/useCountdownMusic';
+import { useCountdownMusic } from '@/lib/hooks/useCountdownMusic';
 
 interface HostResultsScreenProps {
   questionStats: GameStats;

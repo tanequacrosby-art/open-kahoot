@@ -7,7 +7,7 @@ import { LogIn, Lock, Dice6 } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 import { getSocket } from '@/lib/client/socket-client';
 import type { Game } from '@/types/game';
-import { gameConfig, featureConfig } from '@/lib/config';
+import { gameConfig, featureConfig } from '@/lib/server/config';
 import Button from '@/components/Button';
 import Card from '@/components/Card';
 import Input from '@/components/Input';
