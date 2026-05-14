@@ -1,6 +1,6 @@
 "use client";
 
-import { createGameWithQuestions } from "@/lib/gameActions";
+import { createGameWithQuestions } from "@/lib/server/gameActions";
 import type { Question } from "@/types/game";
 import { useRouter } from "next/navigation";
 
