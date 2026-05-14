@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import '@/lib/i18n';
+import { i18n } from "@/lib/server/i18n";
 
 interface I18nProviderProps {
   children: React.ReactNode;
