@@ -4,7 +4,7 @@ import type { Socket } from 'net';
 import { Server as SocketIOServer } from 'socket.io';
 
 import { GameServer } from '@/lib/game';
-import { SOCKET_PATH } from '@/lib/socket-config';
+import { SOCKET_PATH } from '@/lib/server/socket-config';
 import type { ClientToServerEvents, ServerToClientEvents } from '@/types/game';
 
 type SocketServer = HTTPServer & {

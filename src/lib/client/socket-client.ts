@@ -1,7 +1,7 @@
 'use client';
 
 import { io, Socket } from 'socket.io-client';
-import { SOCKET_PATH } from './socket-config';
+import { SOCKET_PATH } from '@/lib/server/socket-config';
 import type { ServerToClientEvents, ClientToServerEvents } from '@/types/game';
 
 let socket: Socket<ServerToClientEvents, ClientToServerEvents> | null = null;
